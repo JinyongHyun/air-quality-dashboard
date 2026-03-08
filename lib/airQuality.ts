@@ -90,7 +90,11 @@ export async function getMostRecentNational(): Promise<StationData[]> {
   const results = await Promise.allSettled(
     KOREAN_CITIES.map((c) => getCityAirQuality(c.city).then((d) => d ? { ...d, sidoName: c.label } : null))
   );
-  return results
-    .filter((r): r is PromiseFulfilledResult<StationData> => r.status === 'fulfilled' && r.value !== null)
-    .map((r) => r.value);
+  const data: StationData[] = [];
+  for (const r of results) {
+    if (r.status === 'fulfilled' && r.value !== null) {
+      data.push(r.value as StationData);
+    }
+  }
+  return data;
 }
