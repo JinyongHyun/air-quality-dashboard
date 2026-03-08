@@ -4,28 +4,20 @@ import { useEffect, useState } from 'react';
 import { StationData, GRADE_COLORS, GRADE_LABELS } from '@/lib/airQuality';
 
 const SIDOS = ['서울', '부산', '대구', '인천', '광주', '대전', '울산', '경기'];
-const BASE_URL = 'https://apis.data.go.kr/B552584/ArpltnInforInqireSvc';
-
-async function fetchSido(sido: string): Promise<StationData | null> {
-  const key = process.env.NEXT_PUBLIC_AIR_QUALITY_API_KEY!;
-  const url = `${BASE_URL}/getCtprvnRltmMesureDnsty?serviceKey=${key}&returnType=json&numOfRows=1&pageNo=1&sidoName=${encodeURIComponent(sido)}&ver=1.0`;
-  try {
-    const res = await fetch(url);
-    const json = await res.json();
-    const items = json?.response?.body?.items ?? [];
-    if (items.length > 0) return { ...items[0], sidoName: sido };
-    return null;
-  } catch {
-    return null;
-  }
-}
 
 export default function NationalAirQuality() {
   const [data, setData] = useState<StationData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all(SIDOS.map(fetchSido)).then((results) => {
+    Promise.all(
+      SIDOS.map((sido) =>
+        fetch(`/api/air-quality?sido=${encodeURIComponent(sido)}`)
+          .then((r) => r.json())
+          .then((items: StationData[]) => (items.length > 0 ? { ...items[0], sidoName: sido } : null))
+          .catch(() => null)
+      )
+    ).then((results) => {
       setData(results.filter((d): d is StationData => d !== null));
       setLoading(false);
     });
