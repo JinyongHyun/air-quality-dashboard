@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 전국 대기질 대시보드
 
-## Getting Started
+한국환경공단 에어코리아 공공 API를 활용한 실시간 전국 미세먼지·대기질 현황 대시보드 웹서비스입니다.
 
-First, run the development server:
+## 주요 기능
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **실시간 대기질 현황**: 전국 주요 도시(서울, 부산, 대구 등) 미세먼지(PM10, PM2.5), 오존, 통합대기환경지수 표시
+- **지역별 차트**: 시도 선택 시 해당 지역 측정소별 막대 차트 시각화
+- **Google OAuth 로그인**: 허용된 계정만 접근 가능한 보안 인증
+- **접근 허용 리스트**: Turso DB에 저장된 허용 이메일 목록 기반 접근 제어
+
+## 기술 스택
+
+| 영역 | 기술 |
+|------|------|
+| 프레임워크 | Next.js 15 (App Router) |
+| 언어 | TypeScript |
+| 스타일 | Tailwind CSS |
+| 인증 | NextAuth.js v5 + Google OAuth 2.0 |
+| 데이터베이스 | Turso (libSQL / SQLite Edge) |
+| 차트 | Recharts |
+| 배포 | Vercel |
+| 데이터 | 한국환경공단 에어코리아 OpenAPI |
+
+## 환경 변수
+
+`.env.local` 파일에 아래 값을 설정하세요:
+
+```env
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=<랜덤 시크릿>
+GOOGLE_CLIENT_ID=<Google Cloud Console에서 발급>
+GOOGLE_CLIENT_SECRET=<Google Cloud Console에서 발급>
+TURSO_DATABASE_URL=libsql://<your-db>.turso.io
+TURSO_AUTH_TOKEN=<Turso에서 발급>
+AIR_QUALITY_API_KEY=<공공데이터포털에서 발급>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 로컬 실행
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+브라우저에서 `http://localhost:3000` 접속 후, 최초 1회 DB 초기화:
+```
+http://localhost:3000/api/init
+```
 
-## Learn More
+## 접근 허용 계정
 
-To learn more about Next.js, take a look at the following resources:
+Turso DB의 `allowed_users` 테이블에 등록된 이메일만 로그인 가능합니다.
+기본 등록 계정: `23@kookmin.ac.kr`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 배포
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+GitHub 저장소에 push하면 Vercel을 통해 자동 배포됩니다.
+Vercel 프로젝트 설정의 Environment Variables에 위 환경변수를 모두 등록하세요.
 
-## Deploy on Vercel
+## 데이터 출처
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **공공데이터포털**: https://www.data.go.kr/
+- **API명**: 한국환경공단_에어코리아_대기오염정보
+- **갱신주기**: 1시간
