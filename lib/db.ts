@@ -14,7 +14,7 @@ export async function initDb() {
     )
   `);
   // 초기 허용 사용자 등록
-  const initialUsers = ['23@kookmin.ac.kr', 'wlsdyd4270@gmail.com'];
+  const initialUsers = ['23@kookmin.ac.kr', 'wlsdyd4270@gmail.com', 'kts123@kookmin.ac.kr'];
   for (const email of initialUsers) {
     await db.execute({
       sql: `INSERT OR IGNORE INTO allowed_users (email) VALUES (?)`,
