@@ -4,26 +4,32 @@ import { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { StationData } from '@/lib/airQuality';
 
+const BASE_URL = 'https://apis.data.go.kr/B552584/ArpltnInforInqireSvc';
+
+async function fetchSidoData(sido: string): Promise<StationData[]> {
+  const key = process.env.NEXT_PUBLIC_AIR_QUALITY_API_KEY!;
+  const url = `${BASE_URL}/getCtprvnRltmMesureDnsty?serviceKey=${key}&returnType=json&numOfRows=20&pageNo=1&sidoName=${encodeURIComponent(sido)}&ver=1.0`;
+  const res = await fetch(url);
+  const json = await res.json();
+  return json?.response?.body?.items ?? [];
+}
+
 export default function AirQualityChart() {
   const [data, setData] = useState<StationData[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const loadData = (sido: string) => {
+    setLoading(true);
+    fetchSidoData(sido)
+      .then((d) => setData(d.slice(0, 10)))
+      .catch(() => setData([]))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    const handler = (e: Event) => {
-      const sido = (e as CustomEvent).detail;
-      setLoading(true);
-      fetch(`/api/air-quality?sido=${encodeURIComponent(sido)}`)
-        .then((r) => r.json())
-        .then((d) => setData(d.slice(0, 10)))
-        .catch(() => setData([]))
-        .finally(() => setLoading(false));
-    };
+    loadData('서울');
+    const handler = (e: Event) => loadData((e as CustomEvent).detail);
     window.addEventListener('sidoChange', handler);
-    // 초기 로드
-    fetch('/api/air-quality?sido=서울')
-      .then((r) => r.json())
-      .then((d) => setData(d.slice(0, 10)))
-      .catch(() => setData([]));
     return () => window.removeEventListener('sidoChange', handler);
   }, []);
 

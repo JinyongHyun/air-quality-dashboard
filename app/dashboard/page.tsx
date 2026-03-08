@@ -1,14 +1,12 @@
 import { auth } from '@/lib/auth';
-import { getMostRecentNational, GRADE_COLORS, GRADE_LABELS } from '@/lib/airQuality';
 import { signOut } from '@/lib/auth';
+import { GRADE_COLORS, GRADE_LABELS } from '@/lib/airQuality';
 import AirQualityChart from '@/components/AirQualityChart';
 import SidoSelector from '@/components/SidoSelector';
-
-export const revalidate = 3600; // 1시간 캐시
+import NationalAirQuality from '@/components/NationalAirQuality';
 
 export default async function DashboardPage() {
   const session = await auth();
-  const data = await getMostRecentNational().catch(() => []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -34,38 +32,13 @@ export default async function DashboardPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* 지역별 현황 카드 */}
+        {/* 주요 도시 현황 카드 - 클라이언트에서 직접 호출 */}
         <section className="mb-8">
           <h2 className="text-lg font-semibold text-gray-700 mb-4">주요 도시 대기질 현황</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {data.map((station) => {
-              const grade = station.khaiGrade;
-              const color = GRADE_COLORS[grade] ?? '#94a3b8';
-              const label = GRADE_LABELS[grade] ?? '-';
-              return (
-                <div key={station.stationName} className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-gray-700">{station.sidoName}</span>
-                    <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: color }}>{label}</span>
-                  </div>
-                  <div className="space-y-1 text-sm text-gray-600">
-                    <div className="flex justify-between">
-                      <span>PM10</span><span className="font-medium">{station.pm10Value ?? '-'} ㎍/㎥</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>PM2.5</span><span className="font-medium">{station.pm25Value ?? '-'} ㎍/㎥</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>통합지수</span><span className="font-medium">{station.khaiValue ?? '-'}</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <NationalAirQuality />
         </section>
 
-        {/* 차트 및 지역 선택 */}
+        {/* 지역별 상세 차트 */}
         <section className="mb-8">
           <h2 className="text-lg font-semibold text-gray-700 mb-4">지역별 상세 조회</h2>
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
@@ -96,7 +69,7 @@ export default async function DashboardPage() {
         </section>
 
         <footer className="mt-10 text-center text-xs text-gray-400">
-          데이터 출처: 한국환경공단 에어코리아 (data.go.kr) · 1시간마다 업데이트
+          데이터 출처: 한국환경공단 에어코리아 (data.go.kr) · 실시간 업데이트
         </footer>
       </main>
     </div>
