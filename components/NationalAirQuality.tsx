@@ -18,7 +18,7 @@ export default function NationalAirQuality() {
           .catch(() => null)
       )
     ).then((results) => {
-      setData(results.filter((d): d is StationData => d !== null));
+      setData(results.filter((d) => d !== null) as StationData[]);
       setLoading(false);
     });
   }, []);
