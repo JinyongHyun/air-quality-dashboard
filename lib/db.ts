@@ -14,10 +14,13 @@ export async function initDb() {
     )
   `);
   // 초기 허용 사용자 등록
-  await db.execute({
-    sql: `INSERT OR IGNORE INTO allowed_users (email) VALUES (?)`,
-    args: ['23@kookmin.ac.kr'],
-  });
+  const initialUsers = ['23@kookmin.ac.kr', 'wlsdyd4270@gmail.com'];
+  for (const email of initialUsers) {
+    await db.execute({
+      sql: `INSERT OR IGNORE INTO allowed_users (email) VALUES (?)`,
+      args: [email],
+    });
+  }
 }
 
 export async function isAllowedUser(email: string): Promise<boolean> {
