@@ -22,7 +22,7 @@ export async function initDb() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  const initialUsers = ['23@kookmin.ac.kr', 'wlsdyd4270@gmail.com', 'kts123@kookmin.ac.kr'];
+  const initialUsers = ['23@kookmin.ac.kr', 'kts123@kookmin.ac.kr'];
   for (const email of initialUsers) {
     await db.execute({
       sql: `INSERT OR IGNORE INTO allowed_users (email) VALUES (?)`,
