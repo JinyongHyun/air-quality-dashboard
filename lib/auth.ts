@@ -1,6 +1,5 @@
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
-import db from './db';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -11,12 +10,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async signIn({ user }) {
-      if (!user.email) return false;
-      await db.execute({
-        sql: `INSERT OR IGNORE INTO allowed_users (email) VALUES (?)`,
-        args: [user.email],
-      });
-      return true;
+      return !!user.email;
     },
     async session({ session }) {
       return session;
