@@ -64,6 +64,7 @@ export default function GuestbookClient({ userEmail, userName }: { userEmail: st
             maxLength={500}
             rows={4}
             className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 resize-none focus:outline-none focus:ring-2 focus:ring-blue-300"
+            style={{ color: '#1f2937' }}
           />
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-400">{content.length} / 500</span>
