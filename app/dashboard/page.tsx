@@ -20,7 +20,10 @@ export default async function DashboardPage() {
               <p className="text-xs text-gray-400">한국환경공단 에어코리아 실시간 데이터</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <a href="/guestbook" className="text-sm bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-lg transition font-medium">
+              방명록
+            </a>
             <span className="text-sm text-gray-600 hidden sm:block">{session?.user?.email}</span>
             <form action={async () => { 'use server'; await signOut({ redirectTo: '/login' }); }}>
               <button type="submit" className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition cursor-pointer">

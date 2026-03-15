@@ -13,7 +13,15 @@ export async function initDb() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  // 초기 허용 사용자 등록
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS guestbook (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      author_email TEXT NOT NULL,
+      author_name TEXT NOT NULL,
+      content TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
   const initialUsers = ['23@kookmin.ac.kr', 'wlsdyd4270@gmail.com', 'kts123@kookmin.ac.kr'];
   for (const email of initialUsers) {
     await db.execute({
